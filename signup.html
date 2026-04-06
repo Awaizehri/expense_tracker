@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SignUp</title>
+</head>
+<body>
+     <header id="header">
+        <div class="header-division">
+            <a href="" class="site-logo">Ledger</a>
+            <nav class="nav-bar">
+                <div class="navbar-division">
+                    <ul class="pages-list">
+                        <ol class="other-pages">
+                            <a href=""class="">Home</a>
+                        </ol>
+                    </ul>
+                    <div class="access-division">
+                        <a href="" class="access-link">LogIn</a>
+                        <a href=""class="access-link">Sign Up</a>
+                    </div>
+                </div>
+            </nav>
+        </div>
+    </header>
+    <main id="main-content">
+        <form action="">
+            <div class="form-division">
+                <h1>Register.</h1>
+                <p>Register an Account.</p>
+                <hr>
+                <label for="first-name"><b>Full Name</b></label> 
+                <input type="text" placeholder="Full name">
+
+                <label for="email"><b>Email Address</b></label> 
+                <input type="text" placeholder="Enter Email" id="email" required>
+                
+                <label for="Password"><b>Password</b></label> 
+                <input type="text" placeholder="Create Password" id="password" required>
+
+                <label for="email"><b>Confrim Password</b></label> 
+                <input type="text" placeholder="Confrim password" id="cfn-password" required>
+
+                 <fieldset>
+                    <legend>Select Gender:</legend>
+
+                    <div class="radio-group">
+                        <input type="radio" id="gender-male" name="user_gender">
+                        <label for="gender-male">Male</label>
+                        
+                        <input type="radio" id="gender-female" name="user_gender">
+                        <label for="gender-female">Female</label>
+
+                        <input type="radio" id="gender-other" name="user_gender">
+                        <label for="gender-other">Other</label>
+
+                        <input type="radio" id="gender-none" name="user_gender">
+                        <label for="gender-none">Prefer not to say</label>
+                    </div>
+                </fieldset>
+                <label for="user-dob">Date of Birth:</label>
+                <input type="date" id="user-dob" name="dob" value="01-13-2000">
+
+                <label for="user-country">Country</label>
+                <select name="country" id="user-country">
+                    <option value="" disabled selected>Select your Country:</option>
+                    <option value="">Pakistan</option>
+                    <option value="">India</option>
+                    <option value="">Afghanistan</option>
+                </select>
+                <div class="terms-group">
+                    <input type="radio" id="terms-check" name="terms-accepted" value="" required>
+                    <label for="terms-check">Terms and conditions</label>
+                </div>
+            </div>
+        </form>
+    </main>
+</body>
+</html>
