@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ledger | Transaction History</title>
+</head>
+<body>
+    <header>
+        <div class="header-division">
+            <a href="index.html" class="site-logo">Ledger</a>
+            <nav>
+                <ul class="nav-links">
+                    <li><a href="dashboard.html">Dashboard</a></li>
+                    <li><a href="">History</a></li>
+                    <li><a href="add-trasection.html">Add New</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+    <main>
+        <h1>Transaction History</h1>
+        <table border="1">
+            <thead>
+                <tr>
+                    <th scope="col">Transaction ID</th>
+                    <th scope="col">Date</th>
+                    <th scope="col">Type</th>
+                    <th scope="col">Category</th>
+                    <th scope="col">Amount</th>
+                    <th scope="col">Description</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td>T001</td>
+                    <td>2026-4-01</td>
+                    <td>Expense</td>
+                    <td>Food</td>                
+                    <td>1200</td>
+                    <td>Lunch at Cafetaria.</td>                
+                </tr>
+                <tr>
+                    <td>T002</td>
+                    <td>2026-3-01</td>
+                    <td>Income</td>
+                    <td>Freelance</td>                
+                    <td>1500</td>
+                    <td>Website development payment</td>                
+                </tr>
+                <tr>
+                    <td>T003</td>
+                    <td>2026-2-04</td>
+                    <td>Income</td>
+                    <td>Transportation</td>                
+                    <td>500</td>
+                    <td>Bus fare.</td>                
+                </tr>
+                <tr>
+                    <td>T004</td>
+                    <td>2026-2-21</td>
+                    <td>Expense</td>
+                    <td>Shopping</td>                
+                    <td>3500</td>
+                    <td>Brought Cloths.</td>                
+                </tr>
+                <tr>
+                    <td>T005</td>
+                    <td>2026-01-15</td>
+                    <td>Income</td>
+                    <td>Allowance</td>                
+                    <td>8000</td>
+                    <td>Monthly Allowance.</td>                
+                </tr>
+            </tbody>
+        </table>
+    </main> 
+    <footer>
+        &copy;<span id="current-year"> </span> Ledger
+    </footer>  
+    <script>document.getElementById("current-year").textContent = new Date().getFullYear();</script>
+</body>
+</html>
