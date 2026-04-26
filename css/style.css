@@ -64,13 +64,11 @@ nav ul li a {
     margin-bottom: 20px;
     margin-top: 20px;
 }
-
 .form-group label{
     display: block;
     margin-bottom: 8px;
     font-weight: bold;
     color: #333;
-
 }
 input[type="text"],
 input[type="email"],
