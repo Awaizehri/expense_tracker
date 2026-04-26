@@ -54,5 +54,16 @@
         <!-- <input type="text"> -->
          <button type="submit">Record Transaction</button>
     </form>
+    <footer>
+           <div>
+               <ul>
+                   <li>&copy;<span id="current-year"></span> Ledger</li>
+                   <li><a href="">Terms</a></li>
+                   <li><a href="">Privacy</a></li>
+                   <li><a href="">Cookies</a></li>
+               </ul>
+           </div>
+       </footer>
+       <script>document.getElementById("current-year").textContent = new Date().getFullYear();</script>
 </body>
 </html>
