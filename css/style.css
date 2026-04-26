@@ -1,0 +1,125 @@
+/* Global reset  */
+:root {
+    --bg-main:#011f26;
+    --bg-card: #026873;
+    /* Accent colors (The "pop") */
+    --accnt-income: #03A688;
+    --accent-expense: #f2668b;
+
+    /* Text colors (Added Fro UI necessity) */
+    --text-primary:#F4F5F0: 
+    /* OR --text-primary: #FFFFFF; */
+    --text-secondary: #A0C4C9;
+/*  */
+}
+*{
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+body {
+    font-family: 'Inter', sans-serif;
+    line-height: 1.6;
+    background-color: #f4f7f6;
+    color: #333333;
+}
+/* styling the container */
+nav ul{
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    background-color: #333;
+    display: flex;
+    justify-content: left;
+}
+/* styling the list items */
+
+nav ul li {
+    padding: 15px 0px ;
+    margin: 10px;
+}
+/* styling the links themselves */
+
+nav ul li a {
+    display: block;
+    color:#F4F5F0;
+    text-align: center;
+    padding: 14 20px;
+    text-decoration: none;
+}
+.form-division {
+    max-width: 400px;
+    margin: 40px;
+    padding: 30px;
+    border:1px;
+    border-radius: 8px;
+    background-color: #f9f9f9;
+    font-family: sans-serif;
+}
+.form-group {
+    margin-bottom: 20px;
+    margin-top: 20px;
+}
+
+.form-group label{
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #333;
+
+}
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+input[type="date"] {
+  width: 100%;              /* width */
+  padding: 12px 15px;       /* padding */
+  margin-bottom: 20px;      /* margin (adds spacing below the input) */
+  border: 1px solid #ccc;   /* border */
+  border-radius: 5px;       /* border-radius */
+  box-sizing: border-box;   /* keeps padding from breaking the 100% width */
+  font-size: 16px;
+}
+
+/* Add focus state for a professional touch */
+input:focus {
+  border-color: #007BFF;
+  outline: none;
+}
+
+.submit-btn {
+
+  width: 100%; 
+  padding: 14px;
+  background-color: #007BFF;
+  color: white;
+  border: none; /* Removes default button borders */
+  border-radius: 5px; /* Matches the input corners */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  display: inline;
+  margin-bottom:15px;
+}
+
+.submit-btn:hover {
+  background-color: #0056b3; /* Slightly darker blue on hover */
+}
+
+.reset-btn {
+  width:100%; 
+  padding: 14px;
+  background-color: #ec4f79;
+  color: white;
+  border: none; /* Removes default button borders */
+  border-radius: 5px; /* Matches the input corners */
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+.reset-btn:hover {
+  background-color: #df337b; /* Slightly darker blue on hover */
+}
