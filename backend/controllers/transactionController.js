@@ -4,7 +4,7 @@ const Transaction = require('../models/transactionModel');
 const getTransactions = async (req, res) => {
     try {
         // Retrieve every transaction document stored in the collection
-        const transactions = await Transaction.find(); 
+        const transactions = await Transaction.find().sort({ createdAt: -1 }); 
         res.status(200).json(transactions); 
     } catch (err) {
         // Return a 500 Server Error if the database fails to respond
@@ -15,7 +15,7 @@ const getTransactions = async (req, res) => {
 // 2. POST: Save a new transaction to the database
 const addTransaction = async (req, res) => {
     // 1. ADD THIS LINE HERE TO DEBUG:
-    console.log("=== WHAT IS NODE ACTUALLY IMPORTING? ===", Transaction);
+    // console.log("=== WHAT IS NODE ACTUALLY IMPORTING? ===", Transaction);
 
     try {
         const newTx = await Transaction.create(req.body); 
