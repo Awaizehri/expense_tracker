@@ -25,22 +25,22 @@
         </div>
     </header>
     <main id="main-content">
-        <form action="">
+        <form action="" id="signup-form">
             <div class="form-division">
                 <h1>Register.</h1>
                 <p>Register an Account.</p>
                 <hr>
                 <label for="first-name"><b>Full Name</b></label> 
-                <input type="text" placeholder="Full name">
+                <input type="text" placeholder="Full name" id="signup-name">
 
                 <label for="email"><b>Email Address</b></label> 
-                <input type="text" placeholder="Enter Email" id="email" required>
+                <input type="text" placeholder="Enter Email" id="signup-email" required>
                 
                 <label for="Password"><b>Password</b></label> 
-                <input type="text" placeholder="Create Password" id="password" required>
+                <input type="text" placeholder="Create Password" id="signup-password" required>
 
                 <label for="email"><b>Confrim Password</b></label> 
-                <input type="text" placeholder="Confrim password" id="cfn-password" required>
+                <input type="text" placeholder="Confrim Password" id="signup-confirm-password" required>
 
                  <fieldset>
                     <legend>Select Gender:</legend>
@@ -55,31 +55,35 @@
                         <input type="radio" id="gender-other" name="user_gender">
                         <label for="gender-other">Other</label>
 
-                        <input type="radio" id="gender-none" name="user_gender">
+                        <input type="radio" id="signup-gender-none" name="user_gender">
                         <label for="gender-none">Prefer not to say</label>
                     </div>
                 </fieldset>
-                <label for="user-dob">Date of Birth:</label>
-                <input type="date" id="user-dob" name="dob" value="2000-01-13">
+                <label for="signup-user-dob">Date of Birth:</label>
+                <input type="date" id="signup-user-dob" name="dob" value="2000-01-13">
 
-                <label for="user-country">Country</label>
-                <select name="country" id="user-country">
+                <label for="signup-user-country">Country</label>
+                <select name="country" id="signup-user-country">
                     <option value="" disabled selected>Select your Country:</option>
                     <option value="">Pakistan</option>
                     <option value="">India</option>
                     <option value="">Afghanistan</option>
                 </select>
                 <div class="terms-group">
-                    <input type="checkbox" id="terms-check" name="terms-accepted" value="" required>
+                    <input type="checkbox" id="signup-terms-check" name="terms-accepted" value="" required>
                     <label for="terms-check">Terms and conditions</label>
                 </div>
+            </div>
+            <div class="login-page-buttons">
+                <button type="submit" class="submit-btn" id="signup-submit-button">SignUp</button>
+                <button type="reset" class="reset-btn" id="signup-reset-button">Reset</button>
             </div>
         </form>
     </main>
      <footer>
         <div>
             <ul>
-                <li>&copy;<span id="current-year"></span> Ledger</li>
+                <li>&copy;<span id="current-year"></span> Ledger.</li>
                 <li><a href="">Terms</a></li>
                 <li><a href="">Privacy</a></li>
                 <li><a href="">Cookies</a></li>
@@ -87,5 +91,6 @@
         </div>
     </footer>
     <script>document.getElementById("current-year").textContent = new Date().getFullYear();</script>
+    <script src="js/script.js"></script>
 </body>
 </html>

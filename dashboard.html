@@ -3,13 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Ledger|Dashboard</title>
+    <title>Ledger | Dashboard</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
     <header id="header">
         <div class="header-division">
-            <a href="" class="site-logo">Ledger</a>
+            <a href="index.html" class="site-logo">Ledger</a>
             <nav class="nav-bar">
                 <div class="navbar-division">
                     <ul class="pages-list">
@@ -25,31 +25,94 @@
     </header>
     <main id="main-content">
         <section class="welcome-banner">
-            <h1>Welcome Back, User!</h1>
-            <p>
-                Here is what your finances look like today.
-            </p>
+            <h1 id="welcome-message">Welcome Back, User!</h1>
+            <p>Here is what your finances look like today.</p>
         </section>
-        <section class="account-overview">
+        <div class="dashboard-wrapper">
+    <section class="overview-section">
+        <h2>Account Overview</h2>
+        <div class="overview-cards">
+            <div class="stat-card">
+                <span class="stat-title">TOTAL INCOME</span>
+                <h3 class="income-text" id="dashboard-income">$0.00</h3>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">TOTAL EXPENSE</span>
+                <h3 class="expense-text" id="dashboard-expense">$0.00</h3>
+            </div>
+            <div class="stat-card">
+                <span class="stat-title">REMAINING BALANCE</span>
+                <h3 class="balance-text" id="dashboard-balance">$0.00</h3>
+            </div>
+        </div>
+    </section>
+
+    <section class="dashboard-grid">
+        
+        <div class="grid-main">
+            <div class="dashboard-panel">
+                <h3>Recent Transactions</h3>
+                <ul id="recent-transactions-list" class="clean-list">
+                    </ul>
+            </div>
+        </div>
+
+        <div class="grid-sidebar">
+            <div class="dashboard-panel">
+                <h3>This Month's Summary</h3>
+                <div class="summary-stats">
+                    <p>Income: <span id="monthly-income" class="income-text">$0.00</span></p>
+                    <p>Expense: <span id="monthly-expense" class="expense-text">$0.00</span></p>
+                    <p class="total-line">Balance: <span id="monthly-balance" class="balance-text">$0.00</span></p>
+                </div>
+            </div>
+
+            <div class="dashboard-panel">
+                <h3>Spending by Category</h3>
+                <ul id="category-stats-list" class="clean-list category-list">
+                    </ul>
+            </div>
+        </div>
+
+    </section>
+</div>
+        <!-- <section class="account-overview">
             <h2>Account overview.</h2>
             <div class="dashboard-stats-grid">
                 <article class="stat-card">
                     <h3>Total Income.</h3>
-                    <p class="positive-amount income-text">5000.00</p>
+                    <p class="positive-amount income-text" id="dashboard-income">$0.00</p>
                 </article>
                 <article class="stat-card">
                     <h3>Total Expense.</h3>
-                    <p class="positive-amount expense-text">5000.00</p>
+                    <p class="positive-amount expense-text" id="dashboard-expense">$0.00</p>
                 </article>
                 <article class="stat-card">
-                    <h3>Total Income.</h3>
-                    <p class="positive-amount total-text">5000.00</p>
+                    <h3>Remaining Balance.</h3>
+                    <p class="positive-amount total-text" id="dashboard-balance">$0.00</p>
                 </article>
             </div>
-        </section>
+        </section> -->
     </main>
+    <!-- <h3>
+        Recent Transactions:
+    </h3>
+    <ul id="recent-transactions-list">
 
-     <footer>
+    </ul>
+    <div class="summary-card">
+    <h3>This Month's Summary</h3>
+    <p>Income: <span id="monthly-income" class="income-text">$0.00</span></p>
+    <p>Expense: <span id="monthly-expense" class="expense-text">$0.00</span></p>
+    <p>Balance: <span id="monthly-balance">$0.00</span></p>
+</div>
+
+<div class="category-card">
+    <h3>Spending by Category</h3>
+    <ul id="category-stats-list">
+        </ul> -->
+</div>
+    <footer>
         <div>
             <ul>
                 <li>&copy;<span id="current-year"></span> Ledger</li>
@@ -60,5 +123,6 @@
         </div>
     </footer>
     <script>document.getElementById("current-year").textContent = new Date().getFullYear();</script>
+    <script src="js/script.js"></script>
 </body>
 </html>
