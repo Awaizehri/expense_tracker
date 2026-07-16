@@ -359,3 +359,42 @@ footer ul li a {
 footer ul li a:hover {
   color: #ffffff;           
 }
+
+/* ==========================================
+   ADMIN DASHBOARD STYLES
+   ========================================== */
+.table-container {
+    width: 100%;
+    margin-top: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    overflow: hidden;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    text-align: left;
+}
+
+th, td {
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
+}
+
+th {
+    background-color: #f4f4f4;
+    font-weight: bold;
+    color: #333;
+}
+
+tr:hover {
+    background-color: #f9f9f9;
+}
+
+#admin-welcome-message {
+    font-size: 1.2rem;
+    color: #555;
+    margin-bottom: 20px;
+}

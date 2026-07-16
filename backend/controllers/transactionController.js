@@ -1,10 +1,10 @@
-const Transaction = require('../models/transactionModel'); 
+const Transaction = require('../models/Transaction'); 
 
 // 1. GET: Fetch all transactions from the database
 const getTransactions = async (req, res) => {
     try {
-        // Retrieve every transaction document stored in the collection
-        const transactions = await Transaction.find().sort({ createdAt: -1 }); 
+        // Retrieve every transaction document stored in the collection & filter by id attached by auth Middleware (ProjProd)
+        const transactions = await Transaction.find({user: req.user.id }).sort({ createdAt: -1 }); 
         res.status(200).json(transactions); 
     } catch (err) {
         // Return a 500 Server Error if the database fails to respond
@@ -18,28 +18,37 @@ const addTransaction = async (req, res) => {
     // console.log("=== WHAT IS NODE ACTUALLY IMPORTING? ===", Transaction);
 
     try {
-        const newTx = await Transaction.create(req.body); 
+        //merge the form data (req.body)  with user ID
+        const newTx = await Transaction.create({...req.body, user: req.user.id}); 
         res.status(201).json({ message: "Added!", data: newTx });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }
 };
 
-// 3. PUT: Update an existing transaction by its ID
+// 3. PUT: Update an existing transaction by its ID(owner)
 const updateTransaction = async (req, res) => {
     try {
-        const id = req.params.id; // Expects a unique MongoDB string ID, not a number
+        //(ProjProd)
+        const updateTransaction = await Transaction.findOneAndUpdate(
+            {_id: req.parms.id, user:req.user.id},
+                req.body,
+                {new: ture}
+        );
+        // const id = req.params.id; // Expects a unique MongoDB string ID, not a number
         
         // Finds the document by ID and overwrites it with the incoming request body data.
         // { new: true } ensures the database returns the newly updated version instead of the old one.
         let updatedTx = await Transaction.findByIdAndUpdate(id, req.body, { new: true });
         
-        if (updatedTx) {
-            res.status(200).json({ message: "Updated!", data: updatedTx });
-        } else {
-            // Returns a 404 if the ID is valid but does not exist in the database
-            res.status(404).json({ message: "Transaction not found!" });
-        }
+        // if (updatedTx) {
+        //     res.status(200).json({ message: "Updated!", data: updatedTx });
+        // } else {
+        //     // Returns a 404 if the ID is valid but does not exist in the database
+        //     res.status(404).json({ message: "Transaction not found!" });
+        // }
+        if (!updatedTransaction) return res.status(404).json({message: "Transaction not found or unauthorized."});
+        res.status(200).json({message: "Transaction Updated", transaction: updatedTransaction });
     } catch (err) {
         res.status(400).json({ message: err.message });
     }

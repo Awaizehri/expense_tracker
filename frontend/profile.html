@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile | Expense Tracker</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <nav class="navbar">
+        <h2>Expense Tracker</h2>
+        <div class="nav-links">
+            <a href="dashboard.html">Dashboard</a>
+            <a href="transactions.html">Transactions</a>
+            <a href="profile.html" class="active">Profile</a>
+            <button id="logout-btn" class="reset-btn" style="width: auto; padding: 5px 15px;">Logout</button>
+        </div>
+    </nav>
+
+    <div class="container" style="max-width: 600px; margin-top: 40px;">
+        <h2>My Profile</h2>
+        <div class="profile-card" style="background: white; padding: 20px; border-radius: 8px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); margin-top: 20px;">
+            <p><strong>Name:</strong> <span id="profile-name">Loading...</span></p>
+            <p><strong>Email:</strong> <span id="profile-email">Loading...</span></p>
+            <p><strong>Account Type:</strong> <span id="profile-role">Loading...</span></p>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>

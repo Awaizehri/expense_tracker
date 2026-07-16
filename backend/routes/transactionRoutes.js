@@ -10,6 +10,12 @@ const {
     deleteTransaction
 } = require('../controllers/transactionController');//to our views
 
+//importing bouncer middleware
+const protect = require('../middlewares/authMiddleware');
+
+//routes, force every transaction to go thorugh bouncer middleware 
+router.use(protect);
+
 router.get('/', getTransactions);               // GET /api/transactions (root => api => transactions)
 router.post('/', addTransaction);               // POST /api/transactions
 router.put('/:id', updateTransaction);          // PUT /api/transactions/:id (specified id)

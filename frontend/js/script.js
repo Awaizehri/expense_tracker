@@ -1,5 +1,3 @@
-console.log("🚨 SCRIPT IS AWAKE AND LOADED!");
-
 // ============================================================================
 // MAIN APPLICATION SCOPE
 // Wait for the HTML DOM to fully load before attaching event listeners.
@@ -8,60 +6,163 @@ document.addEventListener('DOMContentLoaded', function() {
 
     // ==========================================
     // ENGINE 1: AUTHENTICATION & USER MANAGEMENT
-    // (Note: Retained Local Storage for Auth as per Lab scope)
     // ==========================================
     
     const signupForm = document.getElementById('signup-form');
     if (signupForm) {
-        signupForm.addEventListener('submit', function(e) {
+        signupForm.addEventListener('submit', async function(e) {
             e.preventDefault(); 
 
             const name = document.getElementById('signup-name').value.trim();
             const email = document.getElementById('signup-email').value.trim();
             const password = document.getElementById('signup-password').value;
             const confirmPass = document.getElementById('signup-confirm-password').value;
-            const terms = document.getElementById('signup-terms-check').checked;
 
-            if (name === "") return alert("Name cannot be empty.");
-            if (email === "" || !email.includes("@")) return alert("Enter a valid email.");
-            if (password.length < 6) return alert("Password must be at least 6 characters.");
             if (password !== confirmPass) return alert("Passwords do not match.");
-            if (!terms) return alert("You must agree to the terms.");
 
-            const userData = { name: name, email: email, password: password };
-            localStorage.setItem('ledgerUser', JSON.stringify(userData));
-            
-            alert("Registration successful! Please log in.");
-            window.location.href = "login.html"; 
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/signup', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }, // No token needed for signup
+                    body: JSON.stringify({ name, email, password })
+                });
+
+                const data = await response.json();
+
+                if (response.ok) {
+                    alert("Registration successful! Please log in.");
+                    window.location.href = "login.html"; 
+                } else {
+                    alert(data.message || "Registration failed.");
+                }
+            } catch (error) {
+                console.error("🕵️‍♂️ NETWORK ERROR ->", error);
+            }
         });
     }
 
     const loginForm = document.getElementById('login-form');
     if (loginForm) {
-        loginForm.addEventListener('submit', function(e) {
+        loginForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            const emailInput = document.getElementById('login-email').value.trim();
-            const passwordInput = document.getElementById('login-password').value;
+            const email = document.getElementById('login-email').value.trim();
+            const password = document.getElementById('login-password').value;
 
-            const storedData = localStorage.getItem('ledgerUser');
-            if (!storedData) {
-                console.error("🕵️‍♂️ BACKPACK EMPTY -> No user found.");
-                return alert("No account found. Please sign up first.");
-            }
-            
-            const user = JSON.parse(storedData);
+            try {
+                const response = await fetch('http://localhost:5000/api/auth/login', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' }, // No token needed for login
+                    body: JSON.stringify({ email, password })
+                });
 
-            const isEmailCorrect = emailInput.toLowerCase() === user.email.toLowerCase();
-            const isPasswordCorrect = passwordInput === user.password;
-            
-            if (isEmailCorrect && isPasswordCorrect) {
-                alert("Login successful!");
-                window.location.href = "dashboard.html";
-            } else {
-                alert("Error: Invalid email or password. Please try again.");
+                const data = await response.json();
+
+                if (response.ok) {
+                    // STORE THE DIGITAL ID BADGE (JWT)
+                    localStorage.setItem('ledgerToken', data.token);
+                    // Store basic user info for the UI
+                    localStorage.setItem('ledgerUser', JSON.stringify(data.user)); 
+                    
+                    alert("Login successful!");
+                    //ProjProd
+                    if (data.user.role === 'admin') {
+                        window.location.href = "admin-dashboard.html";
+                    } else {
+                        window.location.href = "dashboard.html";
+                    }
+                    // window.location.href = "dashboard.html";
+                } else {
+                    alert(data.message || "Invalid credentials.");
+                }
+            } catch (error) {
+                console.error("🕵️‍♂️ NETWORK ERROR ->", error);
             }
         });
+    }
+
+    // ==========================================
+    // PROFILE & SECURITY ENGINE
+    // ==========================================
+
+    if (window.location.href.includes("profile.html")) {
+        const storedUser = JSON.parse(localStorage.getItem('ledgerUser'));
+        
+        if (storedUser) {
+            document.getElementById('profile-name').textContent = storedUser.name;
+            document.getElementById('profile-email').textContent = storedUser.email;
+            
+            const role = storedUser.role.charAt(0).toUpperCase() + storedUser.role.slice(1);
+            document.getElementById('profile-role').textContent = role;
+        } else {
+            window.location.href = "login.html";
+        }
+    }
+
+    const logoutBtn = document.getElementById('logout-btn');
+    if (logoutBtn) {
+        logoutBtn.addEventListener('click', function() {
+            if(confirm("Are you sure you want to log out?")) {
+                localStorage.removeItem('ledgerToken');
+                localStorage.removeItem('ledgerUser');
+                window.location.href = "login.html";
+            }
+        });
+    }
+
+// ==========================================
+    // ENGINE 5: ADMIN DASHBOARD (RBAC)
+    // ==========================================
+    
+    if (window.location.href.includes("admin-dashboard.html")) {
+        
+        (async function loadAdminDashboard() {
+            try {
+                const token = localStorage.getItem('ledgerToken');
+                const storedUser = JSON.parse(localStorage.getItem('ledgerUser'));
+
+                // Extra Frontend Security: Kick them out if they aren't an admin
+                if (!storedUser || storedUser.role !== 'admin') {
+                    alert("Unauthorized access.");
+                    window.location.href = "dashboard.html";
+                    return;
+                }
+
+                // Greet the Admin
+                const welcomeMsg = document.getElementById('admin-welcome-message');
+                if (welcomeMsg) welcomeMsg.textContent = `Welcome, Administrator ${storedUser.name}`;
+
+                // Fetch all users from the secure backend route
+                const response = await fetch('http://localhost:5000/api/admin/users', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) throw new Error("Failed to fetch users");
+
+                const users = await response.json();
+                const userList = document.getElementById('admin-user-list');
+                
+                if (userList) {
+                    userList.innerHTML = "";
+                    users.forEach(user => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${user.name}</td>
+                            <td>${user.email}</td>
+                            <td><strong>${user.role.toUpperCase()}</strong></td>
+                            <td>
+                                ${user.role !== 'admin' ? `<button class="reset-btn" onclick="deleteUserAccount('${user._id}')" style="padding: 5px 10px;">Delete User</button>` : '<em>Protected</em>'}
+                            </td>
+                        `;
+                        userList.appendChild(row);
+                    });
+                }
+            } catch(error) {
+                console.error("🕵️‍♂️ ADMIN ERROR ->", error);
+            }
+        })();
     }
 
     // ==========================================
@@ -71,28 +172,41 @@ document.addEventListener('DOMContentLoaded', function() {
     const addTransactionForm = document.getElementById('add-transaction-form');
     if (addTransactionForm) {
         
-        // --- STATE MANAGEMENT: THE EDIT WAITING ROOM ---
-        const editItemString = localStorage.getItem('ledgerEditItem');
-        if (editItemString) {
-            const editItem = JSON.parse(editItemString);
-            
-            document.getElementById('transaction-type').value = editItem.type;
-            document.getElementById('transaction-amount').value = editItem.amount;
-            document.getElementById('transaction-category').value = editItem.category;
-            document.getElementById('transaction-date').value = editItem.date;
-            document.getElementById('transaction-description').value = editItem.description;
+        const urlParams = new URLSearchParams(window.location.search);
+        const editId = urlParams.get('editId');
+        
+        if (editId) {
+            (async function loadEditData(){
+                try {
+                    const token = localStorage.getItem('ledgerToken');
+                    const response = await fetch('http://localhost:5000/api/transactions', {
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+                    const transactions = await response.json();
 
-            const submitBtn = addTransactionForm.querySelector('.submit-btn');
-            submitBtn.textContent = "Update Transaction";
-            addTransactionForm.dataset.editingId = editItem.id; 
+                    const editItem = transactions.find(txn => txn._id === editId);
+
+                    if (editItem){
+                        document.getElementById('transaction-type').value = editItem.type;
+                        document.getElementById('transaction-amount').value = editItem.amount;
+                        document.getElementById('transaction-category').value = editItem.category;
+                        document.getElementById('transaction-date').value = editItem.date.split('T')[0];
+                        document.getElementById('transaction-description').value = editItem.description;
+
+                        const submitBtn = addTransactionForm.querySelector('.submit-btn');
+                        submitBtn.textContent = "Update Transaction";
+                    }
+                } catch (error) {
+                    console.error("🕵️‍♂️ ERROR -> Could not load item for editing", error);
+                }
+            })();
         }
 
-        // --- SUBMIT HANDLER: API POST / PUT ---
-        // Notice the 'async' keyword here. We are doing network operations.
         addTransactionForm.addEventListener('submit', async function(e) {
             e.preventDefault();
 
-            // 1. Package the payload for the backend
             const payload = {
                 type: document.getElementById('transaction-type').value,
                 amount: parseFloat(document.getElementById('transaction-amount').value),
@@ -102,33 +216,30 @@ document.addEventListener('DOMContentLoaded', function() {
             };
 
             try {
-                // 2. Routing logic: Update (PUT) vs Create (POST)
-                if (addTransactionForm.dataset.editingId) {
-                    const editingId = addTransactionForm.dataset.editingId;
-                    
-                    // Send PUT request to Express Backend
-                    await fetch(`http://localhost:5000/api/transactions/${editingId}`, {
+                const token = localStorage.getItem('ledgerToken'); // Get token before sending
+
+                if (editId) {
+                    await fetch(`http://localhost:5000/api/transactions/${editId}`, {
                         method: 'PUT',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
                         body: JSON.stringify(payload)
                     });
-                    
-                    // Clean up waiting room
-                    localStorage.removeItem('ledgerEditItem');
-                    delete addTransactionForm.dataset.editingId;
                     alert("Transaction updated successfully!");
-                    
                 } else {
-                    // Send POST request to Express Backend
                     await fetch('http://localhost:5000/api/transactions', {
                         method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Authorization': `Bearer ${token}`
+                        },
                         body: JSON.stringify(payload)
                     });
                     alert("Transaction added successfully!");
                 }
 
-                // 3. Redirect back to the table
                 window.location.href = "transactions.html"; 
 
             } catch (error) {
@@ -137,17 +248,14 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-
+                    
     // ==========================================
-    // ENGINE 3: CRUD 'READ' PIPELINE (Search, Filter, Render)
+    // ENGINE 3: CRUD 'READ' PIPELINE
     // ==========================================
     
     const transactionList = document.getElementById('transaction-list');
     if (transactionList) {
         
-        /**
-         * THE TEMPLATE (Render Engine)
-         */
         function renderTable(data) {
             transactionList.innerHTML = ""; 
             
@@ -161,30 +269,30 @@ document.addEventListener('DOMContentLoaded', function() {
                 const amountClass = txn.type === 'Income' ? 'income-text' : 'expense-text';
                 
                 row.innerHTML = `
-                <td>${txn.date}</td>
+                <td>${txn.date.split('T')[0]}</td>
                 <td>${txn.type}</td>
                 <td>${txn.category}</td>
                 <td class="${amountClass}">$${parseFloat(txn.amount).toFixed(2)}</td>
                 <td>${txn.description}</td>
                 <td>
-                    <button class="submit-btn" onclick="editTransaction(${txn.id})" style="padding: 5px 10px; margin:0 5px 0 0; background-color: #007BFF; width:auto;">Edit</button>
-                    <button class="reset-btn" onclick="deleteTransaction(${txn.id})" style="padding: 5px 10px; margin:0; width:auto;">Delete</button>
+                    <button class="submit-btn" onclick="editTransaction('${txn._id}')" style="padding: 5px 10px; margin:0 5px 0 0; background-color: #007BFF; width:auto;">Edit</button>
+                    <button class="reset-btn" onclick="deleteTransaction('${txn._id}')" style="padding: 5px 10px; margin:0; width:auto;">Delete</button>
                 </td>
                 `;
                 transactionList.appendChild(row);
             });
         }
 
-        /**
-         * THE VIEW/CONTROLLER (Data Pipeline)
-         * Now uses async/await to fetch live data from the server before filtering.
-         */
         async function applyFilters() {
             let transactions = [];
             
-            // 1. Fetch live data from Express API
             try {
-                const response = await fetch('http://localhost:5000/api/transactions');
+                const token = localStorage.getItem('ledgerToken'); // Get token before fetching
+                const response = await fetch('http://localhost:5000/api/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 transactions = await response.json();
             } catch (error) {
                 console.error("🕵️‍♂️ NETWORK ERROR -> Could not fetch transactions", error);
@@ -203,12 +311,10 @@ document.addEventListener('DOMContentLoaded', function() {
             const filterValue = filterArea.value;
             const sortValue = sortArea.value;
 
-            // Pipeline Stage 1: Dropdown Type Filter
             if (filterValue !== "All") {
                 transactions = transactions.filter(txn => txn.type === filterValue);
             }
 
-            // Pipeline Stage 2: Text Search Filter
             if (searchTerm) {
                 transactions = transactions.filter(txn => 
                     txn.category.toLowerCase().includes(searchTerm) || 
@@ -216,7 +322,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 );
             }
 
-            // Pipeline Stage 3: Sorting Algorithm
             transactions.sort((a, b) => {
                 if (sortValue === 'amount-high') return b.amount - a.amount;
                 if (sortValue === 'amount-low') return a.amount - b.amount;
@@ -224,7 +329,6 @@ document.addEventListener('DOMContentLoaded', function() {
                 if (sortValue === 'date-old') return new Date(a.date) - new Date(b.date);
             });
 
-            // Hand processed data to the Template
             renderTable(transactions);
         }
 
@@ -239,25 +343,24 @@ document.addEventListener('DOMContentLoaded', function() {
         }
         
         applyFilters(); 
-
-    } else if (window.location.href.includes("transactions.html")) {
-        console.error("🕵️‍♂️ FATAL ERROR: Cannot find <tbody id='transaction-list'> in HTML!");
-    }
+    } 
 
     // ==========================================
     // ENGINE 4: BUSINESS INTELLIGENCE DASHBOARD
     // ==========================================
     
-    if (window.location.href.includes("dashboard.html")) {
+    if (window.location.href.includes("dashboard.html") && !window.location.href.includes("admin-dashboard.html")) {
         
-        // Wrap dashboard logic in an async IIFE to fetch data once for all widgets
         (async function loadDashboard() {
             try {
-                // 1. Fetch Master Data from Backend
-                const response = await fetch('http://localhost:5000/api/transactions');
+                const token = localStorage.getItem('ledgerToken'); // Get token
+                const response = await fetch('http://localhost:5000/api/transactions', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
                 const transactions = await response.json();
 
-                // --- DASHBOARD SECTION A: RECENT TRANSACTIONS (Task 8) ---
                 const recentList = document.getElementById('recent-transactions-list');
                 if (recentList) {
                     recentList.innerHTML = ""; 
@@ -273,14 +376,13 @@ document.addEventListener('DOMContentLoaded', function() {
                             listItem.innerHTML = `
                                 <strong>${txn.category}</strong> - 
                                 <span style="color: ${color};">$${parseFloat(txn.amount).toFixed(2)}</span> 
-                                <small>(${txn.date})</small>
+                                <small>(${txn.date.split('T')[0]})</small>
                             `;
                             recentList.appendChild(listItem);
                         });
                     }
                 } 
 
-                // --- DASHBOARD SECTION B: MONTHLY SUMMARY (Task 9) ---
                 const currentMonth = new Date().getMonth(); 
                 const currentYear = new Date().getFullYear();
                 let monthlyIncome = 0;
@@ -305,7 +407,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     mBalanceEl.textContent = `$${monthlyBalance.toFixed(2)}`;
                 }
 
-                // --- DASHBOARD SECTION C: CATEGORY AGGREGATION (Task 7) ---
                 const categoryStatsList = document.getElementById('category-stats-list');
                 if (categoryStatsList) {
                     categoryStatsList.innerHTML = ""; 
@@ -328,7 +429,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     }
                 }
 
-                // --- DASHBOARD SECTION D: ALL-TIME OVERVIEW STATS ---
                 const dashboardIncome = document.getElementById('dashboard-income');
                 const dashboardExpense = document.getElementById('dashboard-expense');
                 const dashboardBalance = document.getElementById('dashboard-balance');
@@ -349,7 +449,6 @@ document.addEventListener('DOMContentLoaded', function() {
                     dashboardBalance.textContent = `$${remainingBalance.toFixed(2)}`;
                 }
 
-                // Inject personalized welcome message (From Auth Local Storage)
                 const storedUser = JSON.parse(localStorage.getItem('ledgerUser'));
                 if (storedUser) {
                     const welcomeMsg = document.getElementById('welcome-message');
@@ -359,7 +458,7 @@ document.addEventListener('DOMContentLoaded', function() {
             } catch(error) {
                 console.error("🕵️‍♂️ NETWORK ERROR -> Dashboard failed to load", error);
             }
-        })(); // Self-executing async function
+        })(); 
     }
 });
 
@@ -367,16 +466,17 @@ document.addEventListener('DOMContentLoaded', function() {
 // GLOBAL FUNCTIONS SCOPE
 // ============================================================================
 
-/**
- * DELETION HANDLER: API DELETE
- * Sends a DELETE request to the Express backend.
- * @param {number} id - Unique timestamp ID of the transaction
- */
 async function deleteTransaction(id) {
     if(confirm("Are you sure you want to delete this transaction?")) {
         try {
+            const token = localStorage.getItem('ledgerToken'); // Fetch token
+
             const response = await fetch(`http://localhost:5000/api/transactions/${id}`, {
-                method: 'DELETE'
+                method: 'DELETE',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                }
             });
 
             if (response.ok) {
@@ -391,28 +491,34 @@ async function deleteTransaction(id) {
     }
 }
 
-/**
- * EDIT HANDLER: FETCH THEN STAGE
- * Queries the backend for the specific record, stages it, and redirects.
- * @param {number} id - Unique timestamp ID of the transaction
- */
-async function editTransaction(id) {
-    try {
-        // Fetch the fresh list from the backend
-        const response = await fetch('http://localhost:5000/api/transactions');
-        const transactions = await response.json();
-        
-        // Find the specific transaction
-        const transaction = transactions.find(tnx => tnx.id === id);
-        
-        if (transaction) {
-            // Stage in temporary storage (The "Waiting Room")
-            localStorage.setItem('ledgerEditItem', JSON.stringify(transaction));
-            window.location.href = "add-transaction.html";
-        } else {
-            alert("Transaction no longer exists on the server.");
+function editTransaction(id) {
+    // Stateless routing: Pass the MongoDB ID directly to the URL
+    window.location.href = `add-transaction.html?editId=${id}`;
+}
+
+// --- ADMIN GLOBAL FUNCTIONS ---
+async function deleteUserAccount(userId) {
+    if(confirm("CRITICAL WARNING: Are you sure you want to permanently delete this user account?")) {
+        try {
+            const token = localStorage.getItem('ledgerToken'); 
+
+            const response = await fetch(`http://localhost:5000/api/admin/users/${userId}`, {
+                method: 'DELETE',
+                headers: { 
+                    'Content-Type': 'application/json',
+                    'Authorization': `Bearer ${token}` 
+                }
+            });
+
+            if (response.ok) {
+                alert("User successfully deleted.");
+                window.location.reload(); 
+            } else {
+                alert("Failed to delete user.");
+            }
+        } catch (error) {
+            console.error("🕵️‍♂️ ADMIN ERROR ->", error);
+            alert("Could not reach the backend server.");
         }
-    } catch (error) {
-        console.error("🕵️‍♂️ NETWORK ERROR ->", error);
     }
 }
